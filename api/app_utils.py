@@ -22,7 +22,7 @@ def create_jwt_token(user_id):
         jwt_payload = {
             "sub": user_id,
             "iat": time.time(),
-            "iss": power_sync_url,
+            "iss": "http://127.0.0.1:8000/",
             "aud": power_sync_url,
             "exp": int(time.time()) + 300,  # 5 minutes expiration
         }
