@@ -13,6 +13,7 @@ def base64url_decode(data):
     return base64.b64decode(data)
 
 def create_jwt_token(user_id):
+    print(user_id)
     try:
         jwt_header = {
             "alg": power_sync_private_key_json["alg"],
@@ -22,7 +23,7 @@ def create_jwt_token(user_id):
         jwt_payload = {
             "sub": user_id,
             "iat": time.time(),
-            "iss": "http://127.0.0.1:8000/",
+            "iss": "https://d9ae-2601-282-1800-d970-7da1-854e-b9a7-98d.ngrok-free.app",
             "aud": power_sync_url,
             "exp": int(time.time()) + 300,  # 5 minutes expiration
         }
@@ -41,6 +42,7 @@ def create_jwt_token(user_id):
 
 # PowerSync private key
 power_sync_private_key_b64 = config('POWERSYNC_PRIVATE_KEY')
+power_sync_public_key_b64 = config('POWERSYNC_PUBLIC_KEY')
 
 # PowerSync Url
 power_sync_url = config('POWERSYNC_URL')
@@ -48,3 +50,6 @@ power_sync_url = config('POWERSYNC_URL')
 # PowerSync public key
 power_sync_private_key_bytes = base64url_decode(power_sync_private_key_b64.encode('utf-8'))
 power_sync_private_key_json = json.loads(power_sync_private_key_bytes.decode('utf-8'))
+
+power_sync_public_key_bytes = base64url_decode(power_sync_public_key_b64.encode('utf-8'))
+power_sync_public_key_json = json.loads(power_sync_public_key_bytes.decode('utf-8'))
