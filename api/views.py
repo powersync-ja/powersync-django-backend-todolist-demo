@@ -11,6 +11,8 @@ from .models import Todo, List
 @api_view(['GET'])
 def get_token(request):
     try:
+        # For demo purposes the userId is hardcoded, 
+        # In your app you'll fetch the user from the database 
         user_id = "4"
         token = app_utils.create_jwt_token(user_id)
         return JsonResponse({
@@ -34,6 +36,9 @@ def get_keys(request):
 @api_view(['GET'])
 def get_session(request):
     try:
+        # For demo purposes the session is always valid,
+        # In your app you'll need to handle user sessions 
+        # and invalidate the session after expiry.
         return JsonResponse({
             "session": "valid"
         })
@@ -42,6 +47,8 @@ def get_session(request):
 
 @csrf_exempt
 def auth(request):
+    # For demo purposes the username and password are in plain text,
+    # In your app you must handle usernames and passwords properly.
     data = json.loads(request.body.decode('utf-8'))
     username = data.get('username')
     password = data.get('password')
@@ -60,103 +67,68 @@ def sync(request):
     print(op)
     if op.get('table') == 'api_todo':
         if request.method == 'PUT':
-            try:
-                # Attempt to retrieve an existing Todo object with the given todo_id
-                todo = Todo.objects.get(id=data.get('id'))
-                # If the Todo object exists, update its fields
-                todo.description = data.get('description')
-                todo.created_by = data.get('created_by')
-                todo.list_id = data.get('list_id')
-                todo.save()
-                return Response({'message': 'Todo updated'}, status=200)
-            except Todo.DoesNotExist:
-                # If the Todo object does not exist, create a new one
-                todo = Todo(id=data.get('id'), description=data.get('description'), created_by=data.get('created_by'), list_id=data.get('list_id'))
-                todo.save()
-                return Response({'message': 'Todo created'}, status=200)
+            upsertTodo(data)
+            return Response({'message': 'Todo updated'}, status=200)
         elif request.method == 'PATCH':
+            updateTodo(data)
+            return HttpResponse({'message': 'Todo updated'}, status=200)
+        elif request.method == 'DELETE':
             try:
-                # Attempt to retrieve an existing Todo object with the given todo_id
                 todo = Todo.objects.get(id=data.get('id'))
-                if todo is not None:
-                    # If the Todo object exists, update its fields
-                    todo.description = data.get('description')
-                    todo.created_by = data.get('created_by')
-                    todo.list_id = data.get('list_id')
-                    todo.save()
-                    return HttpResponse({'message': 'Todo updated'}, status=200)
+                todo.delete()
+                return HttpResponse({'message': 'Todo deleted'}, status=200)
             except Todo.DoesNotExist:
                 return HttpResponse({'message': 'Todo does not exist'}, status=404)
-        elif request.method == 'DELETE':
-                try:
-                    # Attempt to retrieve the Todo object by its id
-                    todo = Todo.objects.get(id=data.get('id'))
-                    todo.delete()
-                    return HttpResponse({'message': 'Todo deleted'}, status=200)
-                except Todo.DoesNotExist:
-                    return HttpResponse({'message': 'Todo does not exist'}, status=404)
     elif op.get('table') == 'api_list':
         if request.method == 'PUT':
-            try:
-                # Attempt to retrieve an existing Todo object with the given todo_id
-                list = List.objects.get(id=data.get('id'))
-                # If the Todo object exists, update its fields
-                list.created_at = data.get('created_at')
-                list.name = data.get('name')
-                list.owner_id = data.get('owner_id')
-                list.save()
-                return Response({'message': 'List updated'}, status=200)
-            except List.DoesNotExist:
-                # If the Todo object does not exist, create a new one
-                list = List(id=data.get('id'), created_at=data.get('created_at'), name=data.get('name'), owner_id=data.get('owner_id'))
-                list.save()
-                return Response({'message': 'List created'}, status=200)
+            upsertList(data)
+            return Response({'message': 'List created'}, status=200)
         elif request.method == 'PATCH':
+            updateList(data)   
+            return HttpResponse({'message': 'List updated'}, status=200)
+        elif request.method == 'DELETE':
             try:
-                # Attempt to retrieve an existing Todo object with the given todo_id
                 list = List.objects.get(id=data.get('id'))
-                if list is not None:
-                    # If the Todo object exists, update its fields
-                    list.created_at = data.get('created_at')
-                    list.name = data.get('name')
-                    list.owner_id = data.get('owner_id')
-                    list.save()
-                    return HttpResponse({'message': 'List updated'}, status=200)
+                list.delete()
+                return HttpResponse({'message': 'List deleted'}, status=200)
             except List.DoesNotExist:
                 return HttpResponse({'message': 'List does not exist'}, status=404)
-        elif request.method == 'DELETE':
-                try:
-                    # Attempt to retrieve the Todo object by its id
-                    list = List.objects.get(id=data.get('id'))
-                    list.delete()
-                    return HttpResponse({'message': 'List deleted'}, status=200)
-                except List.DoesNotExist:
-                    return HttpResponse({'message': 'List does not exist'}, status=404)
-    
+                
+def upsertTodo(data):
+    try:
+        todo = Todo.objects.get(id=data.get('id'))
+        todo.description = data.get('description')
+        todo.created_by = data.get('created_by')
+        todo.list_id = data.get('list_id')
+        todo.save()
+    except Todo.DoesNotExist:
+        todo = Todo(id=data.get('id'), description=data.get('description'), created_by=data.get('created_by'), list_id=data.get('list_id'))
+        todo.save()
 
-# @api_view(['PATCH'])
-# def sync(request):
-#     try:
-#         data = json.loads(request.body.decode('utf-8'))
-#         # Attempt to retrieve an existing Todo object with the given todo_id
-#         todo = Todo.objects.get(id=data.get('id'))
-#         if todo is not None:
-#             # If the Todo object exists, update its fields
-#             todo.description = data.get('description')
-#             todo.created_by = data.get('created_by')
-#             todo.list_id = data.get('list_id')
-#             todo.save()
-#             return JsonResponse({'message': 'Todo updated'}, status=200)
-#     except Todo.DoesNotExist:
-#         return JsonResponse({'message': 'Todo does not exist'}, status=404)
+def updateTodo(data):
+    todo = Todo.objects.get(id=data.get('id'))
+    if todo is not None:
+        todo.description = data.get('description')
+        todo.created_by = data.get('created_by')
+        todo.list_id = data.get('list_id')
+        todo.save()
 
-# @api_view(['DELETE'])
-# def sync(request):
-#     try:
-#         data = json.loads(request.body.decode('utf-8'))
-#         # Attempt to retrieve the Todo object by its id
-#         todo = Todo.objects.get(id=data.get('id'))
-#         todo.delete()
-#         return JsonResponse({'message': 'Todo deleted'}, status=200)
-#     except Todo.DoesNotExist:
-#        return JsonResponse({'message': 'Todo does not exist'}, status=404)
+def upsertList(data):
+    try:
+        list = List.objects.get(id=data.get('id'))
+        list.created_at = data.get('created_at')
+        list.name = data.get('name')
+        list.owner_id = data.get('owner_id')
+        list.save()
+        return Response({'message': 'List updated'}, status=200)
+    except List.DoesNotExist:
+        list = List(id=data.get('id'), created_at=data.get('created_at'), name=data.get('name'), owner_id=data.get('owner_id'))
+        list.save()
+
+def updateList(data):
+    list = List.objects.get(id=data.get('id'))
+    if list is not None:
+        list.created_at = data.get('created_at')
+        list.name = data.get('name')
+        list.owner_id = data.get('owner_id')
+        list.save()
