@@ -13,7 +13,6 @@ def base64url_decode(data):
     return base64.b64decode(data)
 
 def create_jwt_token(user_id):
-    print(user_id)
     try:
         jwt_header = {
             "alg": power_sync_private_key_json["alg"],
