@@ -61,7 +61,7 @@ def auth(request):
         return JsonResponse({'message': 'Authentication failed'}, status=401)
 
 @api_view(['PUT', 'PATCH', 'DELETE'])
-def sync(request):
+def upload_data(request):
     op = json.loads(request.body.decode('utf-8'))
     data = op.get('data')
     print(op)
