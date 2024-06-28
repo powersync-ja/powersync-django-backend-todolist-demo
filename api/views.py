@@ -51,13 +51,22 @@ def auth(request):
     data = json.loads(request.body.decode('utf-8'))
     username = data.get('username')
     password = data.get('password')
-    user = User.objects.get(username=username, password=password)
-    if user is not None:
-        token = app_utils.create_jwt_token(user.id)
-        response = {'access_token': token}
-        return JsonResponse(response, status=200)
-    else:
-        return JsonResponse({'message': 'Authentication failed'}, status=401)
+    try: 
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            token = app_utils.create_jwt_token(user.id)
+            response = {'access_token': token}
+            return JsonResponse(response, status=200)
+        else:
+            logger.warning(f"Authentication failed for username: {username}")
+            return JsonResponse({'message': 'Authentication failed'}, status=401)
+
+    except json.JSONDecodeError as e:
+        logger.error(f"JSON decode error: {e}")
+        return JsonResponse({'message': 'Invalid JSON'}, status=400)
+    except Exception as e:
+        logger.error(f"Unexpected error: {e}")
+        return JsonResponse({'message': 'Internal server error'}, status=500)
 
 @api_view(['PUT', 'PATCH', 'DELETE'])
 def upload_data(request):
@@ -107,9 +116,18 @@ def upsertTodo(data):
 def updateTodo(data):
     todo = Todos.objects.get(id=data.get('id'))
     if todo is not None:
-        todo.description = data.get('description')
-        todo.created_by = data.get('created_by')
-        todo.list_id = data.get('list_id')
+        if 'description' in data:
+            todo.description = data.get('description')
+        if 'created_by' in data:
+            todo.created_by = data.get('created_by')
+        if 'list_id' in data:
+            todo.list_id = data.get('list_id')
+        if 'completed' in data:
+            todo.completed = data.get('completed')
+        if 'completed_by' in data:
+            todo.completed_by = data.get('completed_by')
+        if 'completed_at' in data:
+            todo.completed_at = data.get('completed_at')
         todo.save()
 
 def upsertList(data):
