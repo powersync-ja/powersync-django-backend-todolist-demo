@@ -42,7 +42,7 @@ python manage.py migrate
 6. Run the following SQL statement on your Postgres database:
 
 ```sql
-create publication powersync for table api_list, api_todo;
+create publication powersync for table lists, todos;
 ```
 
 ## Start App

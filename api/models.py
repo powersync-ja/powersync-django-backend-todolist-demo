@@ -1,15 +1,17 @@
 from django.db import models
 
-class List(models.Model):
+class Lists(models.Model):
     id = models.CharField(max_length=36, primary_key=True)  # Use CharField for 'id' as text
     created_at = models.DateTimeField(auto_now_add=True, null=True)  # Use DateTimeField for 'created_at'
     name = models.CharField(max_length=100, null=True)  # Use CharField for 'name' as text
     owner_id = models.CharField(max_length=36)  # Use CharField for 'owner_id' as text
 
+    class Meta:
+        db_table = 'lists'  # Custom table name without app prefix
     def __str__(self):
         return self.name
     
-class Todo(models.Model):
+class Todos(models.Model):
     id = models.CharField(max_length=36, primary_key=True)  # Use CharField for 'id' as text
     created_at = models.DateTimeField(auto_now_add=True, null=True)  # Use DateTimeField for 'created_at'
     completed_at = models.DateTimeField(null=True, blank=True)  # Use DateTimeField for 'completed_at'
@@ -19,5 +21,7 @@ class Todo(models.Model):
     completed_by = models.CharField(max_length=36, null=True, blank=True)  # Use CharField for 'completed_by' as text
     list_id = models.CharField(max_length=36, null=True)
 
+    class Meta:
+        db_table = 'todos'  # Custom table name without app prefix
     def __str__(self):
         return self.description

@@ -6,7 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 import api.app_utils as app_utils
-from .models import Todo, List
+from .models import Todos, Lists
 
 @api_view(['GET'])
 def get_token(request):
@@ -21,7 +21,6 @@ def get_token(request):
         }, status=200)
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
-
 @api_view(['GET'])
 def get_keys(request):
     try:
@@ -65,7 +64,7 @@ def upload_data(request):
     op = json.loads(request.body.decode('utf-8'))
     data = op.get('data')
     print(op)
-    if op.get('table') == 'api_todo':
+    if op.get('table') == 'todos':
         if request.method == 'PUT':
             upsertTodo(data)
             return Response({'message': 'Todo updated'}, status=200)
@@ -74,12 +73,12 @@ def upload_data(request):
             return HttpResponse({'message': 'Todo updated'}, status=200)
         elif request.method == 'DELETE':
             try:
-                todo = Todo.objects.get(id=data.get('id'))
+                todo = Todos.objects.get(id=data.get('id'))
                 todo.delete()
                 return HttpResponse({'message': 'Todo deleted'}, status=200)
-            except Todo.DoesNotExist:
+            except Todos.DoesNotExist:
                 return HttpResponse({'message': 'Todo does not exist'}, status=404)
-    elif op.get('table') == 'api_list':
+    elif op.get('table') == 'lists':
         if request.method == 'PUT':
             upsertList(data)
             return Response({'message': 'List created'}, status=200)
@@ -88,25 +87,25 @@ def upload_data(request):
             return HttpResponse({'message': 'List updated'}, status=200)
         elif request.method == 'DELETE':
             try:
-                list = List.objects.get(id=data.get('id'))
+                list = Lists.objects.get(id=data.get('id'))
                 list.delete()
                 return HttpResponse({'message': 'List deleted'}, status=200)
-            except List.DoesNotExist:
+            except Lists.DoesNotExist:
                 return HttpResponse({'message': 'List does not exist'}, status=404)
                 
 def upsertTodo(data):
     try:
-        todo = Todo.objects.get(id=data.get('id'))
+        todo = Todos.objects.get(id=data.get('id'))
         todo.description = data.get('description')
         todo.created_by = data.get('created_by')
         todo.list_id = data.get('list_id')
         todo.save()
-    except Todo.DoesNotExist:
-        todo = Todo(id=data.get('id'), description=data.get('description'), created_by=data.get('created_by'), list_id=data.get('list_id'))
+    except Todos.DoesNotExist:
+        todo = Todos(id=data.get('id'), description=data.get('description'), created_by=data.get('created_by'), list_id=data.get('list_id'))
         todo.save()
 
 def updateTodo(data):
-    todo = Todo.objects.get(id=data.get('id'))
+    todo = Todos.objects.get(id=data.get('id'))
     if todo is not None:
         todo.description = data.get('description')
         todo.created_by = data.get('created_by')
@@ -115,18 +114,18 @@ def updateTodo(data):
 
 def upsertList(data):
     try:
-        list = List.objects.get(id=data.get('id'))
+        list = Lists.objects.get(id=data.get('id'))
         list.created_at = data.get('created_at')
         list.name = data.get('name')
         list.owner_id = data.get('owner_id')
         list.save()
         return Response({'message': 'List updated'}, status=200)
-    except List.DoesNotExist:
-        list = List(id=data.get('id'), created_at=data.get('created_at'), name=data.get('name'), owner_id=data.get('owner_id'))
+    except Lists.DoesNotExist:
+        list = Lists(id=data.get('id'), created_at=data.get('created_at'), name=data.get('name'), owner_id=data.get('owner_id'))
         list.save()
 
 def updateList(data):
-    list = List.objects.get(id=data.get('id'))
+    list = Lists.objects.get(id=data.get('id'))
     if list is not None:
         list.created_at = data.get('created_at')
         list.name = data.get('name')
