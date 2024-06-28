@@ -5,6 +5,9 @@
 Demo Django application which has HTTP endpoints to authorize a PowerSync enabled application to sync data between a client device and a Postgres database.
 This repo compliments the [PowerSync + Django React Native Demo: Todo List](https://github.com/powersync-ja/powersync-js/tree/main/demos/django-react-native-todolist)
 
+## Note:
+This demo backend uses ngrok to expose the JWKS endpoint to PowerSync Cloud. Ngrok has been progressively making their free version harder to use. Specifically, they now inject an interstitial warning page that requires a paid plan to remove. Therefore this demo app currently requires a paid ngrok plan. This demo will move to using the self-hosted PowerSync Open Edition in the future.
+
 ## Requirements
 
 This app needs a Postgres instance that is hosted. For a free version for testing/demo purposes, visit [Supabase](https://supabase.com/).
@@ -39,10 +42,12 @@ python manage.py makemigrations
 python manage.py migrate
 ```
 
+Note that one of the migrations creates a test user in the `auth_user` table - you can use it to log into your frontend app. Take note of the user's id and update the hard coded id in the `upload_data` endpoint of `api/views.py` to match this user's id. In production you'd typically want to authenticate the user on this endpoint (using whatever auth mechanism you already have in place) before signing a JWT for use with PowerSync. See an example [here](https://github.com/powersync-ja/powersync-jwks-example/blob/151adf17611bef8a60d9e6cc490827adc4612da9/supabase/functions/powersync-auth/index.ts#L22)
+
 6. Run the following SQL statement on your Postgres database:
 
 ```sql
-create publication powersync for table api_list, api_todo;
+create publication powersync for table lists, todos;
 ```
 
 ## Start App
@@ -86,7 +91,9 @@ Connections                   ttl     opn     rt1     rt5     p50     p90
                               1957    0       0.04    0.03    0.01    89.93
 ```
 
-3. Open the PowerSync Dashboard and paste the `Forwarding` url starting with HTTPS into the Credentials tab of your PowerSync instance e.g.
+3. Update ALLOWED_HOSTS in `todo_list_custom_backend/settings.py` to include your ngrok forwarding address e.g. `http://your_id.ngrok-free.app`, then restart your Django app.
+
+4. Open the PowerSync Dashboard and paste the `Forwarding` url starting with HTTPS into the Credentials tab of your PowerSync instance e.g.
 
 ```
 JWKS URI
@@ -95,4 +102,4 @@ https://your_id.ngrok-free.app/api/get_keys/
 
 Pay special attention to the URL, it should include the `/api/get_keys/` path as this is used by the PowerSync server to validate tokens and the demo will not work without it.
 
-4. Update the `AppConfig.ts` if you're using the [PowerSync + Django React Native Demo: Todo List](https://github.com/powersync-ja/powersync-js/tree/main/demos/django-react-native-todolist) and set the `djangoUrl` value.
+5. Update the `AppConfig.ts` if you're using the [PowerSync + Django React Native Demo: Todo List](https://github.com/powersync-ja/powersync-js/tree/main/demos/django-react-native-todolist) and set the `djangoUrl` value.
