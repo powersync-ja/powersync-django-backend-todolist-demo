@@ -1,12 +1,15 @@
+from django.utils import timezone
 import json
+from venv import logger
 from django.http import HttpResponse, JsonResponse
-from django.contrib.auth.models import User
+from django.contrib.auth import authenticate
 from django.contrib.auth import login
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 import api.app_utils as app_utils
 from .models import Todos, Lists
+from django.contrib.auth import get_user_model
 
 @api_view(['GET'])
 def get_token(request):
@@ -64,6 +67,28 @@ def auth(request):
     except json.JSONDecodeError as e:
         logger.error(f"JSON decode error: {e}")
         return JsonResponse({'message': 'Invalid JSON'}, status=400)
+    except Exception as e:
+        logger.error(f"Unexpected error: {e}")
+        return JsonResponse({'message': 'Internal server error'}, status=500)
+    
+@csrf_exempt
+def register(request):
+    # For demo purposes the username and password are in plain text,
+    # In your app you must handle usernames and passwords properly.
+    data = json.loads(request.body.decode('utf-8'))
+    username = data.get('username')
+    password = data.get('password')
+    try: 
+        User = get_user_model()
+        if not User.objects.filter(username=username).exists():
+            User.objects.create_user(
+                username=username,
+                password=password,
+                last_login=timezone.now()
+            )
+            return JsonResponse({}, status=200)
+        else:
+            return JsonResponse({'message': 'Username is taken'}, status=401)
     except Exception as e:
         logger.error(f"Unexpected error: {e}")
         return JsonResponse({'message': 'Internal server error'}, status=500)
