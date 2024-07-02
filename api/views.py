@@ -11,11 +11,12 @@ import api.app_utils as app_utils
 from .models import Todos, Lists
 from django.contrib.auth import get_user_model
 
+
 @api_view(['GET'])
-def get_token(request):
+def get_powersync_token(request):
     try:
-        # For demo purposes the userId is hardcoded, 
-        # In your app you'll fetch the user from the database 
+        # For demo purposes the userId is hardcoded,
+        # In your app you'll fetch the user from the database
         user_id = "4"
         token = app_utils.create_jwt_token(user_id)
         return JsonResponse({
@@ -24,6 +25,8 @@ def get_token(request):
         }, status=200)
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
+
+
 @api_view(['GET'])
 def get_keys(request):
     try:
@@ -35,17 +38,19 @@ def get_keys(request):
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
 
+
 @api_view(['GET'])
 def get_session(request):
     try:
         # For demo purposes the session is always valid,
-        # In your app you'll need to handle user sessions 
+        # In your app you'll need to handle user sessions
         # and invalidate the session after expiry.
         return JsonResponse({
             "session": "valid"
         })
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
+
 
 @csrf_exempt
 def auth(request):
@@ -54,7 +59,7 @@ def auth(request):
     data = json.loads(request.body.decode('utf-8'))
     username = data.get('username')
     password = data.get('password')
-    try: 
+    try:
         user = authenticate(username=username, password=password)
         if user is not None:
             token = app_utils.create_jwt_token(user.id)
@@ -70,7 +75,8 @@ def auth(request):
     except Exception as e:
         logger.error(f"Unexpected error: {e}")
         return JsonResponse({'message': 'Internal server error'}, status=500)
-    
+
+
 @csrf_exempt
 def register(request):
     # For demo purposes the username and password are in plain text,
@@ -78,7 +84,7 @@ def register(request):
     data = json.loads(request.body.decode('utf-8'))
     username = data.get('username')
     password = data.get('password')
-    try: 
+    try:
         User = get_user_model()
         if not User.objects.filter(username=username).exists():
             User.objects.create_user(
@@ -92,6 +98,7 @@ def register(request):
     except Exception as e:
         logger.error(f"Unexpected error: {e}")
         return JsonResponse({'message': 'Internal server error'}, status=500)
+
 
 @api_view(['PUT', 'PATCH', 'DELETE'])
 def upload_data(request):
@@ -117,7 +124,7 @@ def upload_data(request):
             upsertList(data)
             return Response({'message': 'List created'}, status=200)
         elif request.method == 'PATCH':
-            updateList(data)   
+            updateList(data)
             return HttpResponse({'message': 'List updated'}, status=200)
         elif request.method == 'DELETE':
             try:
@@ -126,7 +133,8 @@ def upload_data(request):
                 return HttpResponse({'message': 'List deleted'}, status=200)
             except Lists.DoesNotExist:
                 return HttpResponse({'message': 'List does not exist'}, status=404)
-                
+
+
 def upsertTodo(data):
     try:
         todo = Todos.objects.get(id=data.get('id'))
@@ -135,8 +143,10 @@ def upsertTodo(data):
         todo.list_id = data.get('list_id')
         todo.save()
     except Todos.DoesNotExist:
-        todo = Todos(id=data.get('id'), description=data.get('description'), created_by=data.get('created_by'), list_id=data.get('list_id'))
+        todo = Todos(id=data.get('id'), description=data.get(
+            'description'), created_by=data.get('created_by'), list_id=data.get('list_id'))
         todo.save()
+
 
 def updateTodo(data):
     todo = Todos.objects.get(id=data.get('id'))
@@ -155,6 +165,7 @@ def updateTodo(data):
             todo.completed_at = data.get('completed_at')
         todo.save()
 
+
 def upsertList(data):
     try:
         list = Lists.objects.get(id=data.get('id'))
@@ -164,8 +175,10 @@ def upsertList(data):
         list.save()
         return Response({'message': 'List updated'}, status=200)
     except Lists.DoesNotExist:
-        list = Lists(id=data.get('id'), created_at=data.get('created_at'), name=data.get('name'), owner_id=data.get('owner_id'))
+        list = Lists(id=data.get('id'), created_at=data.get(
+            'created_at'), name=data.get('name'), owner_id=data.get('owner_id'))
         list.save()
+
 
 def updateList(data):
     list = Lists.objects.get(id=data.get('id'))

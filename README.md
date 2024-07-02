@@ -3,7 +3,7 @@
 ## Overview
 
 Demo Django application which has HTTP endpoints to authorize a PowerSync enabled application to sync data between a client device and a Postgres database.
-This repo compliments the [PowerSync + Django React Native Demo: Todo List](https://github.com/powersync-ja/powersync-js/tree/main/demos/django-react-native-todolist)
+This repo compliments the [PowerSync + Django React Native Demo: Todo List](https://github.com/powersync-ja/powersync-js/tree/main/demos/django-react-native-todolist) and the [PowerSync + Django Flutter Demo: Todo List](https://github.com/powersync-ja/powersync-js/tree/main/demos/django-todolist) demo apps.
 
 ## Note:
 This demo backend uses ngrok to expose the JWKS endpoint to PowerSync Cloud. Ngrok has been progressively making their free version harder to use. Specifically, they now inject an interstitial warning page that requires a paid plan to remove. Therefore this demo app currently requires a paid ngrok plan. This demo will move to using the self-hosted PowerSync Open Edition in the future.
@@ -97,4 +97,6 @@ https://your_id.ngrok-free.app/api/get_keys/
 
 Pay special attention to the URL, it should include the `/api/get_keys/` path as this is used by the PowerSync server to validate tokens and the demo will not work without it.
 
-5. Update the `AppConfig.ts` if you're using the [PowerSync + Django React Native Demo: Todo List](https://github.com/powersync-ja/powersync-js/tree/main/demos/django-react-native-todolist) and set the `djangoUrl` value.
+5. Update your frontend app config
+- React Native: `AppConfig.ts` if you're using the [PowerSync + Django React Native Demo: Todo List](https://github.com/powersync-ja/powersync-js/tree/main/demos/django-react-native-todolist) and set the `djangoUrl` value.
+- Flutter: set `djangoUrl` in `lib/app_config.dart`
