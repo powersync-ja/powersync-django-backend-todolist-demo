@@ -1,5 +1,5 @@
 # Use the official Python image from the Docker Hub
-FROM python:3.9-slim
+FROM python:3.9
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
@@ -15,6 +15,8 @@ RUN pip install -r requirements.txt
 
 # Copy project
 COPY . /app/
+
+EXPOSE 8000
 
 # Run the entrypoint script
 CMD ["/bin/sh", "-c", " python manage.py migrate && python manage.py runserver"]
