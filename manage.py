@@ -3,10 +3,22 @@
 import os
 import sys
 
+from django.core.management.commands.runserver import Command as runserver
+
+# Default port (e.g., 8000)
+DEFAULT_PORT = 8000
+
+# Read PORT from environment variable, fallback to DEFAULT_PORT
+PORT = int(os.getenv('DJANGO_PORT', DEFAULT_PORT))
+
+runserver.default_port = PORT
+runserver.default_addr = '0.0.0.0'
+
 
 def main():
     """Run administrative tasks."""
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'todo_list_custom_backend.settings')
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE',
+                          'todo_list_custom_backend.settings')
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:

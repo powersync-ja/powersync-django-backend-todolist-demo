@@ -44,11 +44,6 @@ python manage.py migrate
 
 Note that one of the migrations creates a test user in the `auth_user` table - you can use it to log into your frontend app. Take note of the user's id and update the hard coded id in the `upload_data` endpoint of `api/views.py` to match this user's id. In production you'd typically want to authenticate the user on this endpoint (using whatever auth mechanism you already have in place) before signing a JWT for use with PowerSync. See an example [here](https://github.com/powersync-ja/powersync-jwks-example/blob/151adf17611bef8a60d9e6cc490827adc4612da9/supabase/functions/powersync-auth/index.ts#L22)
 
-6. Run the following SQL statement on your Postgres database:
-
-```sql
-create publication powersync for table lists, todos;
-```
 
 ## Start App
 
