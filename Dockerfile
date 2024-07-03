@@ -18,5 +18,5 @@ COPY . /app/
 
 EXPOSE 8000
 
-# Run the entrypoint script
+# Run migrations on each boot
 CMD ["/bin/sh", "-c", " python manage.py migrate && python manage.py runserver"]

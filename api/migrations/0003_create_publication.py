@@ -1,6 +1,5 @@
-# yourappname/migrations/000X_your_migration_name.py
-
 from django.db import migrations
+
 
 class Migration(migrations.Migration):
 
@@ -10,7 +9,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RunSQL(
-        """
+            """
             DO $$
             BEGIN
                 IF NOT EXISTS (
