@@ -17,7 +17,7 @@ def get_powersync_token(request):
     try:
         # For demo purposes the userId is hardcoded,
         # In your app you'll fetch the user from the database
-        user_id = "4"
+        user_id = "1"
         token = app_utils.create_jwt_token(user_id)
         return JsonResponse({
             "token": token,
