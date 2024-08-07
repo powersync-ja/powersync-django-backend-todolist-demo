@@ -3,14 +3,18 @@
 ## Overview
 
 Demo Django application which has HTTP endpoints to authorize a PowerSync enabled application to sync data between a client device and a Postgres database.
-This repo compliments the [PowerSync + Django React Native Demo: Todo List](https://github.com/powersync-ja/powersync-js/tree/main/demos/django-react-native-todolist) and the [PowerSync + Django Flutter Demo: Todo List](https://github.com/powersync-ja/powersync-js/tree/main/demos/django-todolist) demo apps.
+This repo compliments these demo apps:
+* [PowerSync + Django React Native Demo: Todo List](https://github.com/powersync-ja/powersync-js/tree/main/demos/django-react-native-todolist)
+* [PowerSync + Django Flutter Demo: Todo List](https://github.com/powersync-ja/powersync-js/tree/main/demos/django-todolist)
 
-## Note:
-This demo backend uses ngrok to expose the JWKS endpoint to PowerSync Cloud. Ngrok has been progressively making their free version harder to use. Specifically, they now inject an interstitial warning page that requires a paid plan to remove. Therefore this demo app currently requires a paid ngrok plan. This demo will move to using the self-hosted PowerSync Open Edition in the future.
+For usage with PowerSync Open Edition, you can use [self-host-demo](https://github.com/powersync-ja/self-host-demo).
+The remainder of these instructions assume you wish to use PowerSync cloud, which is more complicated.
 
 ## Requirements
 
-This app needs a Postgres instance that is hosted. For a free version for testing/demo purposes, visit [Supabase](https://supabase.com/).
+* [ngrok](https://ngrok.com/) is used here for demo/testing purposes, to expose the JWKS endpoint to PowerSync Cloud. You won't be using ngrok to host your application and database in production.
+* a paid ngrok plan. Ngrok has been progressively making their free version harder to use. Specifically, they now inject an interstitial warning page that requires a paid plan to remove.
+* a hosted Postgres instance. For a free version for testing/demo purposes, visit [Supabase](https://supabase.com/).
 
 ## Running the app
 
@@ -59,10 +63,7 @@ This will start the app on `127.0.0.1:8000`
 
 ## Connecting the app with PowerSync
 
-This process is only designed for demo/testing purposes, and is not intended for production use. You won't be using ngrok to host your application and database.
-
-1. Download and install [ngrok](https://ngrok.com/)
-2. Run the ngrok command to create a HTTPS tunnel to your local application
+1. Run the ngrok command to create a HTTPS tunnel to your local application
 
 ```sh
 ngrok http 8000
@@ -86,9 +87,9 @@ Connections                   ttl     opn     rt1     rt5     p50     p90
                               1957    0       0.04    0.03    0.01    89.93
 ```
 
-3. Update ALLOWED_HOSTS in `todo_list_custom_backend/settings.py` to include your ngrok forwarding address e.g. `http://your_id.ngrok-free.app`, then restart your Django app.
+2. Update ALLOWED_HOSTS in `todo_list_custom_backend/settings.py` to include your ngrok forwarding address e.g. `http://your_id.ngrok-free.app`, then restart your Django app.
 
-4. Open the PowerSync Dashboard and paste the `Forwarding` url starting with HTTPS into the Credentials tab of your PowerSync instance e.g.
+3. Open the PowerSync Dashboard and paste the `Forwarding` url starting with HTTPS into the Credentials tab of your PowerSync instance e.g.
 
 ```
 JWKS URI
@@ -97,6 +98,6 @@ https://your_id.ngrok-free.app/api/get_keys/
 
 Pay special attention to the URL, it should include the `/api/get_keys/` path as this is used by the PowerSync server to validate tokens and the demo will not work without it.
 
-5. Update your frontend app config
+4. Update your frontend app config
 - React Native: `AppConfig.ts` if you're using the [PowerSync + Django React Native Demo: Todo List](https://github.com/powersync-ja/powersync-js/tree/main/demos/django-react-native-todolist) and set the `djangoUrl` value.
 - Flutter: set `djangoUrl` in `lib/app_config.dart`
