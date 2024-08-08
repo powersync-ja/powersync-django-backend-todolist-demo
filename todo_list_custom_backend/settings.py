@@ -29,8 +29,7 @@ DEBUG = True
 APPEND_SLASH = False
 
 ALLOWED_HOSTS = [
-    'd9ae-2601-282-1800-d970-7da1-854e-b9a7-98d.ngrok-free.app',
-    '127.0.0.1'
+    '*'
 ]
 
 
