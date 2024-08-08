@@ -2,8 +2,8 @@
 
 ## Overview
 
-Demo Django application which has HTTP endpoints to authorize a PowerSync enabled application to sync data between a client device and a Postgres database.
-This repo compliments these demo apps:
+Demo Django application which has HTTP endpoints to authorize a [PowerSync](https://www.powersync.com/) enabled application to sync data between a client device and a Postgres database.
+This repo complements these demo apps:
 * [PowerSync + Django React Native Demo: Todo List](https://github.com/powersync-ja/powersync-js/tree/main/demos/django-react-native-todolist)
 * [PowerSync + Django Flutter Demo: Todo List](https://github.com/powersync-ja/powersync-js/tree/main/demos/django-todolist)
 
@@ -19,7 +19,7 @@ The remainder of these instructions assume you wish to use PowerSync cloud, whic
 ## Running the app
 
 1. Clone the repository
-2. Follow the steps outlined in [PowerSync Custom Authentication Example](https://github.com/journeyapps/powersync-jwks-example), [Generate a key-pair](https://github.com/journeyapps/powersync-jwks-example#1-generate-a-key-pair) to get the keys you need for this app.
+2. Follow the steps outlined in [PowerSync Custom Authentication Example](https://github.com/journeyapps/powersync-jwks-example) → [Generate a key-pair](https://github.com/journeyapps/powersync-jwks-example#1-generate-a-key-pair) to get the keys you need for this app.
 3. Create a new `.env` file in the root project directory and add the following variables:
 
 ```
@@ -58,7 +58,9 @@ python manage.py runserver
 ```
 
 This will start the app on `127.0.0.1:8000`
+
 2. Test the app the app is working by opening `http://127.0.0.1:8000/api/get_keys/` in the browser
+
 3. You should get a JSON object as the response to that request
 
 ## Connecting the app with PowerSync
@@ -69,7 +71,7 @@ This will start the app on `127.0.0.1:8000`
 ngrok http 8000
 ```
 
-This should create the tunnel and a new HTTPS url should be availible e.g.
+This should create the tunnel and a new HTTPS URL should be availible e.g.
 
 ```sh
 ngrok by @inconshreveable                                                                                                                  (Ctrl+C to quit)
@@ -89,7 +91,7 @@ Connections                   ttl     opn     rt1     rt5     p50     p90
 
 2. Update ALLOWED_HOSTS in `todo_list_custom_backend/settings.py` to include your ngrok forwarding address e.g. `http://your_id.ngrok-free.app`, then restart your Django app.
 
-3. Open the PowerSync Dashboard and paste the `Forwarding` url starting with HTTPS into the Credentials tab of your PowerSync instance e.g.
+3. Open the [PowerSync Dashboard](https://powersync.journeyapps.com/) and paste the `Forwarding` URL starting with HTTPS into the Credentials tab of your PowerSync instance e.g.
 
 ```
 JWKS URI
@@ -99,5 +101,5 @@ https://your_id.ngrok-free.app/api/get_keys/
 Pay special attention to the URL, it should include the `/api/get_keys/` path as this is used by the PowerSync server to validate tokens and the demo will not work without it.
 
 4. Update your frontend app config
-- React Native: `AppConfig.ts` if you're using the [PowerSync + Django React Native Demo: Todo List](https://github.com/powersync-ja/powersync-js/tree/main/demos/django-react-native-todolist) and set the `djangoUrl` value.
+- React Native: `AppConfig.ts` if you're using the [PowerSync + Django React Native Demo: Todo List](https://github.com/powersync-ja/powersync-js/tree/main/demos/django-react-native-todolist) example client app and set the `djangoUrl` value.
 - Flutter: set `djangoUrl` in `lib/app_config.dart`
