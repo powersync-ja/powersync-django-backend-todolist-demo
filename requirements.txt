@@ -4,3 +4,4 @@ python-decouple==3.8
 python_jose==3.3.0
 psycopg2==2.9.9
 cryptography==42.0.8
+django-cors-headers==4.5.0
